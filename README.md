@@ -11,12 +11,12 @@ paramiko>=1.13.0
 scp>=0.10.0  
 netmiko>=0.2.0  
 
-<h4>This is totally experimental at this point.</h4>
+<h4>This is totally experimental at this point</h4>
 
 
 
 <br>
----    
-Kirk Byers
-Python for Network Engineers
-https://pynet.twb-tech.com
+---   
+Kirk Byers  
+Python for Network Engineers  
+https://pynet.twb-tech.com  
