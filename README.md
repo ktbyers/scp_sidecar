@@ -1,18 +1,26 @@
 # netsidecar
-Ansible modules using SCP and SSH to transfer files to Cisco IOS devices.
+Ansible modules for Cisco IOS Devices based upon an SCP file transfer and an SSH control channel
 
-General pattern is to create a Paramiko SSH control channel and then create a
-separate SCP channel to transfer a file to the remote network device.
+<h4>This is totally experimental at this point</h4>
 
-'ip scp server enable' must be configured on the Cisco IOS device.  
+<h6>Modules: </h6>
+cisco_file_transfer     [Idempotent, works reasonably well]  
+cisco_config_merge      [Not idempotent, experimental]  
+cisco_config_replace    [Not idempotent, experimental]  
 
-Requires:  
+<h6>Requires: </h6>
 paramiko>=1.13.0  
 scp>=0.10.0  
 netmiko>=0.2.0  
 
-<h4>This is totally experimental at this point</h4>
+<h6>Router configuration</h6>
+'ip scp server enable' must be configured on the Cisco IOS device.  
 
+<h6>Notes and caveats</h6>
+An enable secret is not supported for the SCP file transfer operation. The username/password 
+provided must have sufficient access to write a file to the remote filesystem. The lack of support 
+of enable secret is due to problems encountered on the SCP connection (probably due to how Cisco's 
+SSH is implemented).
 
 
 <br>
