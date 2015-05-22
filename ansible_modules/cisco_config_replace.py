@@ -5,8 +5,6 @@ Ansible module to perform config replace on Cisco IOS devices.
 This module presupposes that the relevant file has been transferred to the device
 
 The module is not idempotent and does not support check_mode
-
-FIX: Can you make this idempotent?
 '''
 
 from ansible.module_utils.basic import *

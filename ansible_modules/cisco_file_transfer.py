@@ -5,13 +5,10 @@ Ansible module to transfer files to Cisco IOS devices.
 An enable secret is not supported, the username/password provided must have sufficient access
 to write a file to the remote filesystem. The lack of support of enable secret is due to
 problems encountered on the SCP connection (I think due to how Cisco's SSH is implemented).
-
-FIX -- should have an overwrite option?
-FIX -- might need to assume the flash: file system
-FIX -- hard coded to flash:
 '''
 
 import re
+import os
 import hashlib
 
 from ansible.module_utils.basic import *
@@ -57,6 +54,9 @@ class FileTransfer(object):
         self.dest_file = dest_file
         self.file_system = file_system
 
+        src_file_stats = os.stat(source_file)
+        self.file_size = src_file_stats.st_size
+
 
     def open_scp_chan(self):
         '''
@@ -73,13 +73,28 @@ class FileTransfer(object):
         self.scp_conn = None
 
 
+    def verify_space_available(self, search_pattern=r"(.*) bytes available "):
+        '''
+        Verify sufficient space is available on remote network device
+
+        Return a boolean
+        '''
+        remote_cmd = "show {0}".format(self.file_system)
+        remote_output = self.ssh_ctl_chan.send_command(remote_cmd)
+        match = re.search(search_pattern, remote_output)
+        space_avail = int(match.group(1))
+
+        if space_avail > self.file_size:
+            return True
+    
+        return False
+
+
     def check_file_exists(self, remote_cmd=""):
         '''
         Check if the dest_file exists on the remote file system
 
         Return a boolean
-
-        FIX: Need to fix file_system handler
         '''
 
         if not remote_cmd:
@@ -118,8 +133,6 @@ class FileTransfer(object):
         SCP transfer source_file to Cisco IOS device
 
         Verifies MD5 of file on remote device or generates an exception
-
-        FIX: Need to fix file_system handler
         '''
 
         self.open_scp_chan()
@@ -176,18 +189,26 @@ def main():
 
     else:
         if check_mode:
+            if not scp_transfer.verify_space_available():
+                module.fail_json(msg="Insufficient space available on remote device",
+                output=output)
+
             module.exit_json(msg="Check mode: file would be changed on the remote device",
                              changed=True)
         else:
+            if not scp_transfer.verify_space_available():
+                module.fail_json(msg="Insufficient space available on remote device",
+                                 output=output)
+
             scp_transfer.transfer_file()
             if scp_transfer.verify_file():
                 module.exit_json(msg="File successfully transferred to remote device",
                                  changed=True)
 
     if check_mode:
-        module.fail_json(msg="Check mode: file transferred to remote device failed", output=output)
+        module.fail_json(msg="Check mode: File transfer to remote device failed", output=output)
     else:
-        module.fail_json(msg="File transferred to remote device failed", output=output)
+        module.fail_json(msg="File transfer to remote device failed", output=output)
 
 
 if __name__ == "__main__":
