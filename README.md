@@ -3,8 +3,7 @@ Ansible modules for Cisco IOS Devices based upon an SCP file transfer and an SSH
 
 <h5>This is totally experimental at this point</h5>
 
-<br />
-<h5>Modules: </h5>
+<h6>Modules: </h6>
 cisco_file_transfer     [Idempotent, works reasonably well]  
 cisco_config_merge      [Not idempotent, experimental]  
 cisco_config_replace    [Not idempotent, experimental]  
