@@ -1,7 +1,7 @@
 # netsidecar
 Ansible modules for Cisco IOS Devices based upon an SCP file transfer and an SSH control channel
 
-<h5>This is totally experimental at this point</h5>  
+<h5>This is totally experimental at this point.</h5>  
 
 <h6>Modules: </h6>
 * cisco_file_transfer     [Idempotent, works reasonably well]  
@@ -13,7 +13,7 @@ Ansible modules for Cisco IOS Devices based upon an SCP file transfer and an SSH
 * scp>=0.10.0  
 * netmiko>=0.2.0  
 
-<h6>Router configuration:</h7>
+<h6>Router configuration:</h6>
 'ip scp server enable' must be configured on the Cisco IOS device.  
 
 <h6>Notes and caveats:</h6>
