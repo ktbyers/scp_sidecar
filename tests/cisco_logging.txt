@@ -1,0 +1,2 @@
+logging buffered 10020
+no logging console

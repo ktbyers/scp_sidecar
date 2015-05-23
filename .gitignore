@@ -55,3 +55,8 @@ docs/_build/
 
 # PyBuilder
 target/
+
+tests/DEVICE_CREDS.py
+# kludge to allow pytest-ansible to find the ansible modules
+tests/library
+tests/TEST_CASES.txt
