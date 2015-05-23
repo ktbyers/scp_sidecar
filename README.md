@@ -14,7 +14,7 @@ Ansible modules for Cisco IOS Devices based upon an SCP file transfer and an SSH
 * scp>=0.10.0  
 * netmiko>=0.2.0  
 * pytest>=2.6.0 (only for automated testing)  
-* pytest-ansible>=1.2.5
+* pytest-ansible>=1.2.5 (only for automated testing)  
 
 #### Router configuration:
 'ip scp server enable' must be configured on the Cisco IOS device.  
