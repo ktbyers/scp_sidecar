@@ -55,20 +55,17 @@ def main():
         if check_mode:
             scp_transfer.close_scp_chan()
             if not scp_transfer.verify_space_available():
-                module.fail_json(msg="Insufficient space available on remote device",
-                output=output)
+                module.fail_json(msg="Insufficient space available on remote device")
 
             module.exit_json(msg="Check mode: file would be changed on the remote device",
                              changed=True)
         else:
             if not scp_transfer.verify_space_available():
                 scp_transfer.close_scp_chan()
-                module.fail_json(msg="Insufficient space available on remote device",
-                                 output=output)
+                module.fail_json(msg="Insufficient space available on remote device")
 
             scp_transfer.transfer_file()
             if scp_transfer.verify_file():
-                scp_transfer.close_scp_chan()
                 module.exit_json(msg="File successfully transferred to remote device",
                                  changed=True)
 
