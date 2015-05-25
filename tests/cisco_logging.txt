@@ -1,2 +1,2 @@
-logging buffered 10000
+logging buffered 10010
 no logging console

@@ -24,6 +24,8 @@ def main():
             source_file=dict(required=True),
             dest_file=dict(required=True),
             dest_file_system=dict(required=False),
+            enable_scp=dict(required=False, default=False, choices=BOOLEANS),
+            overwrite=dict(required=False, default=True, choices=BOOLEANS),
         ),
         supports_check_mode=True
     )
@@ -41,6 +43,7 @@ def main():
     ssh_conn = ConnectHandler(**net_device)
     source_file = module.params['source_file']
     dest_file = module.params['dest_file']
+    enable_scp = module.params['enable_scp']
 
     scp_transfer = FileTransfer(ssh_conn, source_file, dest_file)
 
@@ -64,8 +67,14 @@ def main():
                 scp_transfer.close_scp_chan()
                 module.fail_json(msg="Insufficient space available on remote device")
 
+            scp_changed = False
+            if enable_scp:
+                ssh_conn.send_config_set(['ip scp server enable'])
+                scp_changed = True
             scp_transfer.transfer_file()
             if scp_transfer.verify_file():
+                if scp_changed:
+                    ssh_conn.send_config_set(['no ip scp server enable'])
                 module.exit_json(msg="File successfully transferred to remote device",
                                  changed=True)
 

@@ -1,4 +1,4 @@
-# netsidecar
+# scp_sidecar
 Ansible modules for Cisco IOS Devices based upon an SCP file transfer and an SSH control channel
 
 #### This is totally experimental at this point.
