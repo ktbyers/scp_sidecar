@@ -8,7 +8,7 @@ problems encountered on the SCP connection (I think due to how Cisco's SSH is im
 '''
 
 from ansible.module_utils.basic import *
-from netmiko import ConnectHandler, SCPConn, FileTransfer
+from netmiko import ConnectHandler, FileTransfer
 
 def main():
     '''
@@ -39,50 +39,41 @@ def main():
         'verbose': False,
     }
 
-
     ssh_conn = ConnectHandler(**net_device)
     source_file = module.params['source_file']
     dest_file = module.params['dest_file']
     enable_scp = module.params['enable_scp']
-
-    scp_transfer = FileTransfer(ssh_conn, source_file, dest_file)
-
     check_mode = module.check_mode
+    scp_changed = False
 
-    # Check if file already exists and has correct MD5
-    if scp_transfer.check_file_exists() and scp_transfer.compare_md5():
-        scp_transfer.close_scp_chan()
-        module.exit_json(msg="File exists and has correct MD5", changed=False)
+    with FileTransfer(ssh_conn, source_file, dest_file) as scp_transfer:
 
-    else:
+        # Check if file already exists and has correct MD5
+        if scp_transfer.check_file_exists() and scp_transfer.compare_md5():
+            module.exit_json(msg="File exists and has correct MD5", changed=False)
+
         if check_mode:
-            scp_transfer.close_scp_chan()
             if not scp_transfer.verify_space_available():
                 module.fail_json(msg="Insufficient space available on remote device")
 
             module.exit_json(msg="Check mode: file would be changed on the remote device",
                              changed=True)
-        else:
-            if not scp_transfer.verify_space_available():
-                scp_transfer.close_scp_chan()
-                module.fail_json(msg="Insufficient space available on remote device")
 
-            scp_changed = False
-            if enable_scp:
-                ssh_conn.send_config_set(['ip scp server enable'])
-                scp_changed = True
-            scp_transfer.transfer_file()
-            if scp_transfer.verify_file():
-                if scp_changed:
-                    ssh_conn.send_config_set(['no ip scp server enable'])
-                module.exit_json(msg="File successfully transferred to remote device",
-                                 changed=True)
+        # Verify space available on remote file system
+        if not scp_transfer.verify_space_available():
+            module.fail_json(msg="Insufficient space available on remote device")
 
-    if check_mode:
-        scp_transfer.close_scp_chan()
-        module.fail_json(msg="Check mode: File transfer to remote device failed")
-    else:
-        scp_transfer.close_scp_chan()
+        # Transfer file
+        if enable_scp:
+            scp_transfer.enable_scp()
+            scp_changed = True
+        scp_transfer.transfer_file()
+        if scp_transfer.verify_file():
+            if scp_changed:
+                scp_transfer.disable_scp()
+            module.exit_json(msg="File successfully transferred to remote device",
+                             changed=True)
+
         module.fail_json(msg="File transfer to remote device failed")
 
 
