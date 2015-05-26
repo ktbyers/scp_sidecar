@@ -1,10 +1,6 @@
 #!/usr/bin/python
 '''
 Ansible module to transfer files to Cisco IOS devices.
-
-An enable secret is not supported, the username/password provided must have sufficient access
-to write a file to the remote filesystem. The lack of support of enable secret is due to
-problems encountered on the SCP connection (I think due to how Cisco's SSH is implemented).
 '''
 
 from ansible.module_utils.basic import *
