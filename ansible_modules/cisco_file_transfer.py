@@ -50,7 +50,7 @@ def main():
             module.exit_json(msg="File exists and has correct MD5", changed=False)
 
         if not overwrite and scp_transfer.check_file_exists():
-            module.exit_json(msg="File already exists and overwrite set to false", changed=False)
+            module.fail_json(msg="File already exists and overwrite set to false")
 
         if check_mode:
             if not scp_transfer.verify_space_available():
