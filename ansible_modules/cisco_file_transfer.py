@@ -43,6 +43,7 @@ def main():
     source_file = module.params['source_file']
     dest_file = module.params['dest_file']
     enable_scp = module.params['enable_scp']
+    overwrite = module.params['overwrite']
     check_mode = module.check_mode
     scp_changed = False
 
@@ -51,6 +52,9 @@ def main():
         # Check if file already exists and has correct MD5
         if scp_transfer.check_file_exists() and scp_transfer.compare_md5():
             module.exit_json(msg="File exists and has correct MD5", changed=False)
+
+        if not overwrite and scp_transfer.check_file_exists():
+            module.exit_json(msg="File already exists and overwrite set to false", changed=False)
 
         if check_mode:
             if not scp_transfer.verify_space_available():
@@ -67,6 +71,7 @@ def main():
         if enable_scp:
             scp_transfer.enable_scp()
             scp_changed = True
+
         scp_transfer.transfer_file()
         if scp_transfer.verify_file():
             if scp_changed:
