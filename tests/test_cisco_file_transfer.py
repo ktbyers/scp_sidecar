@@ -69,7 +69,6 @@ def test_xfer_and_scp_enable(ansible_module):
 
     Ansible module must enable scp for this to work
     '''
-    # Will disable scp after test
     ansible_args = dict( 
         source_file="/home/kbyers/scp_sidecar/tests/cisco_logging.txt",
         dest_file="cisco_logging.txt",
@@ -81,3 +80,21 @@ def test_xfer_and_scp_enable(ansible_module):
     for host, result in module_out.items():
         assert result['changed'] is True
         assert result['msg'] == 'File successfully transferred to remote device'
+
+
+def test_overwrite(ansible_module):
+    '''
+    Verify overwrite when file already exists results in an error
+    '''
+    ansible_args = dict( 
+        source_file="/home/kbyers/scp_sidecar/tests/cisco_logging1.txt",
+        dest_file="cisco_logging.txt",
+        enable_scp="true",       
+        overwrite="false",
+    )
+    ansible_args.update(my_device)
+    module_out = ansible_module.cisco_file_transfer(**ansible_args)
+
+    for host, result in module_out.items():
+        assert result['changed'] is False
+        assert result['msg'] == 'File already exists and overwrite set to false'

@@ -42,8 +42,8 @@ def main():
     ssh_conn = ConnectHandler(**net_device)
     source_file = module.params['source_file']
     dest_file = module.params['dest_file']
-    enable_scp = module.params['enable_scp']
-    overwrite = module.params['overwrite']
+    enable_scp = module.boolean(module.params['enable_scp'])
+    overwrite = module.boolean(module.params['overwrite'])
     check_mode = module.check_mode
     scp_changed = False
 
