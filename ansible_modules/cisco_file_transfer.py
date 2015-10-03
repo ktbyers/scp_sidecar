@@ -19,7 +19,7 @@ def main():
             password=dict(required=True),
             source_file=dict(required=True),
             dest_file=dict(required=True),
-            dest_file_system=dict(required=False),
+            dest_file_system=dict(required=False, default='flash:'),
             enable_scp=dict(required=False, default=False, choices=BOOLEANS),
             overwrite=dict(required=False, default=True, choices=BOOLEANS),
         ),
@@ -38,12 +38,13 @@ def main():
     ssh_conn = ConnectHandler(**net_device)
     source_file = module.params['source_file']
     dest_file = module.params['dest_file']
+    dest_file_system = module.params['dest_file_system']
     enable_scp = module.boolean(module.params['enable_scp'])
     overwrite = module.boolean(module.params['overwrite'])
     check_mode = module.check_mode
     scp_changed = False
 
-    with FileTransfer(ssh_conn, source_file, dest_file) as scp_transfer:
+    with FileTransfer(ssh_conn, source_file, dest_file, file_system=dest_file_system) as scp_transfer:
 
         # Check if file already exists and has correct MD5
         if scp_transfer.check_file_exists() and scp_transfer.compare_md5():
