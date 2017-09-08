@@ -1,27 +1,21 @@
 #!/usr/bin/python
-'''
-Ansible module to transfer files to Cisco IOS devices.
-'''
-
+"""Ansible module to transfer files to Cisco IOS devices."""
 from ansible.module_utils.basic import *
 from netmiko import ConnectHandler, FileTransfer
 
 def main():
-    '''
-    Ansible module to transfer files to Cisco IOS devices.
-    '''
-
+    """Ansible module to transfer files to Cisco IOS devices."""
     module = AnsibleModule(
         argument_spec=dict(
-            host=dict(required=True),
-            port=dict(default=22, required=False),
-            username=dict(required=True),
-            password=dict(required=True),
-            source_file=dict(required=True),
-            dest_file=dict(required=True),
-            dest_file_system=dict(required=False, default='flash:'),
-            enable_scp=dict(required=False, default=False, choices=BOOLEANS),
-            overwrite=dict(required=False, default=True, choices=BOOLEANS),
+            host=dict(type='str', required=True),
+            port=dict(type='int', default=22, required=False),
+            username=dict(type='str', required=True),
+            password=dict(type='str', required=True, no_log=True),
+            source_file=dict(type='str', required=True),
+            dest_file=dict(type='str', required=True),
+            dest_file_system=dict(type='str', required=False, default='flash:'),
+            enable_scp=dict(type='bool', required=False, default=False),
+            overwrite=dict(type='bool', required=False, default=True),
         ),
         supports_check_mode=True
     )
